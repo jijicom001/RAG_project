@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>母乳哺育助手</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; text-align: center; }
+        input, button { font-size: 16px; padding: 10px; margin: 10px; }
+        #response { margin-top: 20px; font-size: 18px; }
+    </style>
+</head>
+<body>
+
+    <h1>母乳哺育助手</h1>
+    <p>請輸入您的問題：</p>
+    <input type="text" id="userQuestion" placeholder="輸入您的問題..." />
+    <button onclick="askQuestion()">詢問</button>
+
+    <h2>回答：</h2>
+    <p id="response">請輸入問題後點擊詢問。</p>
+
+    <script>
+        function askQuestion() {
+            let question = document.getElementById("userQuestion").value;
+            if (question.trim() === "") {
+                alert("請輸入問題！");
+                return;
+            }
+            
+            fetch("/ask", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question: question })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.answer) {
+                    document.getElementById("response").innerText = data.answer;
+                } else {
+                    document.getElementById("response").innerText = "抱歉，我無法處理您的請求。";
+                }
+            })
+            .catch(error => {
+                document.getElementById("response").innerText = "發生錯誤，請稍後再試！";
+                console.error("錯誤:", error);
+            });
+        }
+    </script>
+
+</body>
+</html>
